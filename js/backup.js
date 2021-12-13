@@ -1,0 +1,85 @@
+let saveInit = false;
+let canImport = false;
+let recoveryData = null;
+
+function initSaveManager(){
+	document.getElementById('fileInput').addEventListener('change', handleFileSelect, false);
+}
+
+function handleFileSelect(event){
+	const reader = new FileReader()
+	reader.onload = handleFileLoad;
+	reader.readAsText(event.target.files[0])
+}
+
+function handleFileLoad(event){
+	recoveryData = JSON.parse(event.target.result);
+	if(recoveryData.saveCount !== undefined) {
+		document.getElementById('fileContent').textContent = "Save File Count: " + recoveryData.saveCount;
+		canImport = true;
+	} else {
+		document.getElementById('fileContent').textContent = "Invalid backup file.";
+	}
+}
+
+function ExportSaves(filename) {
+	ExportData = {};
+
+	ExportData.Global = JSON.parse(LZString.decompressFromBase64(localStorage.getItem('RPG Global')));
+	ExportData.Config = JSON.parse(LZString.decompressFromBase64(localStorage.getItem('RPG Config')));
+
+	let saveId = 1;
+	let foundSaves = false;
+
+	while(true) {
+		currentSave = localStorage.getItem('RPG File' + saveId);
+		
+		if(currentSave !== null) {
+			ExportData['File' + saveId] = JSON.parse(LZString.decompressFromBase64(currentSave));
+			saveId ++;
+		} else {
+			break;
+		}
+	}
+	
+	ExportData.saveCount = saveId - 1;
+
+	let element = document.createElement('a');
+
+	element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(ExportData)));
+
+	element.setAttribute('download', filename);
+
+    	element.style.display = 'none';
+    	document.body.appendChild(element);
+
+    	element.click();
+
+    	document.body.removeChild(element);
+
+	return JSON.stringify(ExportData);
+}
+
+function ImportSaves(json) {
+	if (canImport == false) return false;
+	
+	data = (Array.isArray(json)) ? JSON.parse(json) : json; // Left over from testing.
+	localStorage.setItem('RPG Global', LZString.compressToBase64(JSON.stringify(data.Global)));
+	localStorage.setItem('RPG Config', LZString.compressToBase64(JSON.stringify(data.Config)));
+
+	for(i = 1; i <= data.saveCount; i++) {
+		localStorage.setItem('RPG File' + i, LZString.compressToBase64(JSON.stringify(data['File' + i])));
+	}
+	
+	location.reload();
+	
+	return true;
+}
+
+function toggleSaveManager() {
+	if (!saveInit) initSaveManager();
+	
+	let el = document.getElementById('save-manager');
+	
+	el.style.zIndex = (el.style.zIndex == "100") ? 0 : 100; //This is done to make sure the recovery utility is usable, as RPG maker seems to interfere with extra divs.
+}

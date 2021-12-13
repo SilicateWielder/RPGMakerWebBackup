@@ -1,0 +1,48 @@
+
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+		<meta name="viewport" content="user-scalable=no">
+		<link rel="icon" href="icon/icon.png" type="image/png">
+		<link rel="apple-touch-icon" href="icon/icon.png">
+		<link rel="stylesheet" type="text/css" href="fonts/gamefont.css">
+		<title>RPGMaker MV Game.</title>
+		<script type="text/javascript" src="js/backup.js"></script>
+	</head>
+	<body style="background-color: black; margin: 0px; padding: 0px;" onload="init()">
+		<div id="header" style="color: white; text-align: left;">
+			<div id="disclaimer" style="float: left; padding: 2px; color: black; background: white; width: 100%">
+				Click "Open Save Manager" to backup or recover save files.<br>
+			</div>
+			<div id='save-toggle' onclick="toggleSaveManager();" style="float: right; padding: 2px; color: white; background: red; position: absolute; top: 0px; right: 0px; cursor: pointer;">Open Save Manager</div>
+
+			<div id="save-manager" style="z-index: 10; position: absolute; margin: auto; inset: 0px; width: 816px; height: 250px; background-color: white; color: black; border: 2px red;text-align: center;min-height: fit-content;">
+				<div style="text-align: center">This recovery system is not meant as an end-all-be-all solution. I cannot guarantee it will work, and when it does it is still your responsibility to keep track of your recovery files.<br><br>I quite literally wrote this utility in a couple of hours.</div><br><br>
+				Recovery File:
+				<input id="fileInput" type="file" name="file"/>
+				<pre id="fileContent">No file selected. Select a file to see if the process worked, or to recover saves.</pre>
+				<div id="import-button" style="padding: 2px; background: gray; cursor: pointer;" onclick="ImportSaves(recoveryData)">Import Save Files (Reloads page)</div><br>
+				<div id="export-button" style="padding: 2px; background: gray; cursor: pointer;" onclick="ExportSaves('RPGMaker Backup.json')">Export Save Files</div>
+			</div>
+		</div>
+
+		<script src="js/libs/pixi.js"></script>
+		<script src="js/libs/pixi-tilemap.js"></script>
+		<script src="js/libs/pixi-picture.js"></script>
+		<script src="js/libs/fpsmeter.js"></script>
+		<script src="js/libs/lz-string.js"></script>
+		<script src="js/libs/iphone-inline-video.browser.js"></script>
+		<script src="js/rpg_core.js"></script>
+		<script src="js/rpg_managers.js"></script>
+		<script src="js/rpg_objects.js"></script>
+		<script src="js/rpg_scenes.js"></script>
+		<script src="js/rpg_sprites.js"></script>
+		<script src="js/rpg_windows.js"></script>
+		<script src="js/plugins.js"></script>
+		<script src="js/main.js"></script>
+	</body>
+</html>
