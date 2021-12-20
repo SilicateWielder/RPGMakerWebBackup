@@ -2,6 +2,8 @@ let saveInit = false;
 let canImport = false;
 let recoveryData = null;
 
+const gamePrefix = 'RPG';
+
 function initSaveManager(){
 	document.getElementById('fileInput').addEventListener('change', handleFileSelect, false);
 }
@@ -25,14 +27,16 @@ function handleFileLoad(event){
 function ExportSaves(filename) {
 	ExportData = {};
 
-	ExportData.Global = JSON.parse(LZString.decompressFromBase64(localStorage.getItem('RPG Global')));
-	ExportData.Config = JSON.parse(LZString.decompressFromBase64(localStorage.getItem('RPG Config')));
+	ExportData.Global = JSON.parse(LZString.decompressFromBase64(localStorage.getItem(gamePrefix + ' Global')));
+
+	let configRaw = LZString.decompressFromBase64(localStorage.getItem(gamePrefix + ' Config'));
+	if (configRaw != "") ExportData.Config = JSON.parse(configRaw);
 
 	let saveId = 1;
 	let foundSaves = false;
 
 	while(true) {
-		currentSave = localStorage.getItem('RPG File' + saveId);
+		currentSave = localStorage.getItem(gamePrefix + ' File' + saveId);
 		
 		if(currentSave !== null) {
 			ExportData['File' + saveId] = JSON.parse(LZString.decompressFromBase64(currentSave));
@@ -64,11 +68,11 @@ function ImportSaves(json) {
 	if (canImport == false) return false;
 	
 	data = (Array.isArray(json)) ? JSON.parse(json) : json; // Left over from testing.
-	localStorage.setItem('RPG Global', LZString.compressToBase64(JSON.stringify(data.Global)));
-	localStorage.setItem('RPG Config', LZString.compressToBase64(JSON.stringify(data.Config)));
+	localStorage.setItem(gamePrefix + ' Global', LZString.compressToBase64(JSON.stringify(data.Global)));
+	if (data.Config != "") localStorage.setItem(gamePrefix + ' Config', LZString.compressToBase64(JSON.stringify(data.Config)));
 
 	for(i = 1; i <= data.saveCount; i++) {
-		localStorage.setItem('RPG File' + i, LZString.compressToBase64(JSON.stringify(data['File' + i])));
+		localStorage.setItem(gamePrefix + ' File' + i, LZString.compressToBase64(JSON.stringify(data['File' + i])));
 	}
 	
 	location.reload();
